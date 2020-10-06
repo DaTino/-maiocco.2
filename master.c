@@ -19,15 +19,13 @@ int main(int argc, char **argv) {
   while ((optionIndex = getopt(argc, argv, "hn:s:t:")) != -1) {
     switch (optionIndex) {
       case 'h':
-        printf(
-          "Welcome to the Valid Argument Usage Dimension\n
-          - = - = - \n
-          -h       : Display correct command line argument Usage\n
-          -n <int> : Indicate the maximum total of child processes master will create. (Default 4)\n
-          -s <int> : Indicate the number of children allowed to exist in the system at the same time. (Default 2)\n
-          -t <int> : The time in seconds after which the process will terminate, even if it has not finished. (Default 100)\n
-          The last argument is an input file containing strings to be tested.\n"
-        );
+          printf("Welcome to the Valid Argument Usage Dimension\n");
+          printf("- = - = - \n");
+          printf("-h       : Display correct command line argument Usage\n");
+          printf("-n <int> : Indicate the maximum total of child processes master will create. (Default 4)\n");
+          printf("-s <int> : Indicate the number of children allowed to exist in the system at the same time. (Default 2)\n");
+          printf("-t <int> : The time in seconds after which the process will terminate, even if it has not finished. (Default 100)\n");
+          printf("The last argument is an input file containing strings to be tested.\n");
         break;
 
       case 'n':
