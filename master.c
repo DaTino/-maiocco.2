@@ -16,6 +16,7 @@ int main(int argc, char **argv) {
   char infile[128];
 
   //the wonderful getopt wurld.
+  int optionIndex;
   while ((optionIndex = getopt(argc, argv, "hn:s:t:")) != -1) {
     switch (optionIndex) {
       case 'h':
