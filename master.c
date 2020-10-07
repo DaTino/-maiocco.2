@@ -37,7 +37,6 @@ int main(int argc, char **argv) {
           exit(-1);
         }
         if (maxProc > 20) maxProc = 20;
-        printf("Max # of Processes: %d\n", maxProc);
         break;
 
       case 's':
@@ -47,7 +46,6 @@ int main(int argc, char **argv) {
           perror("master: maxKids <= 0. Aborting.");
           exit(-1);
         }
-        printf("Max # of Children: %d\n", maxKids);
         break;
 
       case 't':
@@ -57,13 +55,11 @@ int main(int argc, char **argv) {
           perror("master: maxSecs <= 0. Aborting.");
           exit(-1);
         }
-        printf("Max Time Before Termination: %d\n s", maxKids);
         break;
 
       case '?':
         if (optind == argc) {
           strcpy(infile, argv[optind-1]);
-          printf("%s\n", infile);
         }
         if(isprint(optopt)) {
           fprintf(stderr, "Uknown option `-%c`.\n", optopt);
@@ -81,8 +77,10 @@ int main(int argc, char **argv) {
 
     }
   }
-
-  printf("\nOutside the getopt!\n");
+  printf("Max # of Processes: %d\n", maxProc);
+  printf("Max # of Children: %d\n", maxKids);
+  printf("Max Time Before Termination: %d\n s", maxKids);
+  printf("%s\n", infile);
 
   return 0;
 }
