@@ -7,12 +7,14 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <string.h>
+#include <ctype.h>
+#include <unistd.h>
 
-int main(int argc, char **argv) {
+int main(int argc, char *argv[]) {
 
-  int maxProc;
-  int maxKids;
-  int maxSecs;
+  int maxProc = 4;
+  int maxKids = 2;
+  int maxSecs = 100;
   char infile[128];
 
   //the wonderful getopt wurld.
@@ -27,11 +29,11 @@ int main(int argc, char **argv) {
           printf("-s <int> : Indicate the number of children allowed to exist in the system at the same time. (Default 2)\n");
           printf("-t <int> : The time in seconds after which the process will terminate, even if it has not finished. (Default 100)\n");
           printf("The last argument is an input file containing strings to be tested.\n");
+          exit(EXIT_SUCCESS);
         break;
 
       case 'n':
-        if (optarg == NULL) maxProc = 4;
-        else maxProc = atoi(optarg);
+        maxProc = atoi(optarg);
         if (maxProc <= 0) {
           perror("master: maxProc <= 0. Aborting.");
           exit(-1);
@@ -40,8 +42,7 @@ int main(int argc, char **argv) {
         break;
 
       case 's':
-        if (optarg == NULL) maxKids = 2;
-        else maxKids = atoi(optarg);
+        maxKids = atoi(optarg);
         if (maxKids <= 0) {
           perror("master: maxKids <= 0. Aborting.");
           exit(-1);
@@ -49,8 +50,7 @@ int main(int argc, char **argv) {
         break;
 
       case 't':
-        if (optarg == NULL) maxSecs = 100;
-        else maxSecs = atoi(optarg);
+        maxSecs = atoi(optarg);
         if (maxSecs <= 0) {
           perror("master: maxSecs <= 0. Aborting.");
           exit(-1);
@@ -58,9 +58,6 @@ int main(int argc, char **argv) {
         break;
 
       case '?':
-        if (optind == argc) {
-          strcpy(infile, argv[optind-1]);
-        }
         if(isprint(optopt)) {
           fprintf(stderr, "Uknown option `-%c`.\n", optopt);
           perror("Error: Unknown option entered.");
@@ -71,15 +68,25 @@ int main(int argc, char **argv) {
           perror("Error: Unknown option character read.");
           return -1;
         }
+        return 1;
 
       default:
         abort();
 
     }
   }
+
+  int index;
+  strcpy(infile, argv[optind]);
+  for (index = optind+1; index < argc; index++) {
+    strcat(infile, argv[index]);
+  }
+
+
+
   printf("Max # of Processes: %d\n", maxProc);
   printf("Max # of Children: %d\n", maxKids);
-  printf("Max Time Before Termination: %d\n s", maxKids);
+  printf("Max Time Before Termination: %d\n", maxSecs);
   printf("%s\n", infile);
 
   return 0;
