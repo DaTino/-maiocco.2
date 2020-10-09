@@ -8,19 +8,37 @@ void removeSpaces(char *s);
 void removeNonAlphaNum(char *str);
 
 int main(int argc, char **argv) {
-	
+
 	//this guy has to open and close a file, I believe...
 	//master controls the amount of processes doing the checking.
 	int shmid;
 	key_t key;
 	char *shm, *s;
 
-	
-
-	if (argc < 2) {
-		perror("Palindromes: Not enough arguments. Aborting.\n");
-		exit(-1);
+	key = 612;
+	//locating...
+	if ((shmid = shmget(key, SHMSZ, 0666)) < 0) {
+		perror("palindromes: error locating shared memory segment.");
+		exit(1);
 	}
+	//attaching...
+	if ((shm = shmat(shmid, NULL, 0)) == (char *) -1) {
+		perror("palindromes: error attaching shared memory.");
+		exit(1);
+	}
+
+	for (s = shm; *s != NULL; s++) {
+		putchar(*s);
+	}
+	putchar('\n');
+
+	*shm = '*';
+	exit(0);
+
+	// if (argc < 2) {
+	// 	perror("Palindromes: Not enough arguments. Aborting.\n");
+	// 	exit(-1);
+	// }
 
 	//printf("orig %s\n", argv[argc-1]);
 
@@ -35,7 +53,7 @@ int main(int argc, char **argv) {
 	removeNonAlphaNum(str);
 	//printf("sans punc %s\n", str);
 
-	
+
 	int l = 0;
 	int h = strlen(str)-1;
 	while (h > l) {

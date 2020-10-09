@@ -16,7 +16,9 @@
 #include <stdbool.h>
 
 #define SHMSZ 128
+static void interruptHandler();
 //key_t startSharedMem();
+FILE* outfile;
 
 int main(int argc, char *argv[]) {
 
@@ -109,7 +111,7 @@ int main(int argc, char *argv[]) {
   }
 
   char *outfileName = "palindromeResults.txt";
-  FILE *outfile = fopen(outfileName, "a+");
+  outfile = fopen(outfileName, "a+");
   if (outfile == NULL) {
     perror("master: Error opening file. Exiting.\n");
     exit(1);
@@ -136,7 +138,7 @@ int main(int argc, char *argv[]) {
       data[i] = '$';
     } else continue;
   }
-  printf("%s\n", data);
+  //printf("%s\n", data);
 
   //now shared memory for reals
 	char c;
@@ -145,25 +147,40 @@ int main(int argc, char *argv[]) {
 	char *shm, *s;
 	//key name 612- the best number.
 	key = 612;
-	//create shared memory segment	
+	//create shared memory segment
 	if ((shmid = shmget(key, SHMSZ, IPC_CREAT | 0666)) < 0) {
 		perror("master: error creating segment.");
 		exit(1);
 	}
 	//attach segment to dataspace
-	if ((shm = shmat(shmid, NULL, 0)) == (char *) -1 {
+	if ((shm = shmat(shmid, NULL, 0)) == (char *) -1) {
 		perror("master: error attaching shared memory.");
 		exit(1);
 	}
 
+  //writing to shared memory...
 	s = shm;
 	for (c = data[i]; c != '\0'; i++) {
 		*s++ = c;
 	}
 	*s = NULL;
-
+  printf("master: Data written to shared memory. Sleeping.\n");
 	while (*shm != '*') sleep(1);
 
-	
+
   return 0;
+}
+
+static void interruptHandler() {
+  key_t key = 612;
+  int* sharedInt;
+  int shmid = shmget(key, SHMSZ, IPC_CREAT | 0666);
+  sharedInt = (int *) shmat(shmid, NULL, 0);
+  fprintf(outfile, "We interrupt this regularly scheduled program at %d s.\n", *(sharedInt+0));
+  fclose(outfile);
+  //rid yonself of shared memory
+  shmctl(shmid, IPC_RMID, NULL);
+  //slaughter the young
+  kill(0, SIGKILL);
+  exit(0);
 }
