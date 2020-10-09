@@ -10,4 +10,4 @@ palindromes: palindromes.o
 	$(CC) -o palindromes palindromes.o
 
 clean:
-	rm master palindromes master.o palindromes.o
+	rm master palindromes master.o palindromes.o palindromeResults.txt

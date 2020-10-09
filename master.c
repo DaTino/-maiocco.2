@@ -9,13 +9,26 @@
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <stdbool.h>
+
+#define SHMSZ 128
+//key_t startSharedMem();
 
 int main(int argc, char *argv[]) {
 
   int maxProc = 4;
   int maxKids = 2;
   int maxSecs = 100;
-  char infile[128];
+  char fileNameBuffer[128];
+
+  if (argc <= 1) {
+    perror("Master: Not enough arguments. Exiting.\n");
+    exit(1);
+  }
 
   //the wonderful getopt wurld.
   int optionIndex;
@@ -29,14 +42,14 @@ int main(int argc, char *argv[]) {
           printf("-s <int> : Indicate the number of children allowed to exist in the system at the same time. (Default 2)\n");
           printf("-t <int> : The time in seconds after which the process will terminate, even if it has not finished. (Default 100)\n");
           printf("The last argument is an input file containing strings to be tested.\n");
-          exit(EXIT_SUCCESS);
+          exit(0);
         break;
 
       case 'n':
         maxProc = atoi(optarg);
         if (maxProc <= 0) {
           perror("master: maxProc <= 0. Aborting.");
-          exit(-1);
+          exit(1);
         }
         if (maxProc > 20) maxProc = 20;
         break;
@@ -45,7 +58,7 @@ int main(int argc, char *argv[]) {
         maxKids = atoi(optarg);
         if (maxKids <= 0) {
           perror("master: maxKids <= 0. Aborting.");
-          exit(-1);
+          exit(1);
         }
         break;
 
@@ -53,7 +66,7 @@ int main(int argc, char *argv[]) {
         maxSecs = atoi(optarg);
         if (maxSecs <= 0) {
           perror("master: maxSecs <= 0. Aborting.");
-          exit(-1);
+          exit(1);
         }
         break;
 
@@ -61,12 +74,12 @@ int main(int argc, char *argv[]) {
         if(isprint(optopt)) {
           fprintf(stderr, "Uknown option `-%c`.\n", optopt);
           perror("Error: Unknown option entered.");
-          return -1;
+          return 1;
         }
         else {
           fprintf (stderr, "Unkown option character `\\x%x`.\n", optopt);
           perror("Error: Unknown option character read.");
-          return -1;
+          return 1;
         }
         return 1;
 
@@ -77,17 +90,58 @@ int main(int argc, char *argv[]) {
   }
 
   int index;
-  strcpy(infile, argv[optind]);
+  strcpy(fileNameBuffer, argv[optind]);
   for (index = optind+1; index < argc; index++) {
-    strcat(infile, argv[index]);
+    strcat(fileNameBuffer, argv[index]);
   }
-
-
 
   printf("Max # of Processes: %d\n", maxProc);
   printf("Max # of Children: %d\n", maxKids);
   printf("Max Time Before Termination: %d\n", maxSecs);
-  printf("%s\n", infile);
+  printf("Opening input file %s\n", fileNameBuffer);
+
+  //File IO
+
+  FILE *infile = fopen(fileNameBuffer, "r");
+  if (infile == NULL) {
+    perror("master: Error opening file. Exiting.\n");
+    exit(1);
+  }
+
+  char *outfileName = "palindromeResults.txt";
+  FILE *outfile = fopen(outfileName, "a+");
+  if (outfile == NULL) {
+    perror("master: Error opening file. Exiting.\n");
+    exit(1);
+  }
+
+  //ok, the task here is to set up the shared memory and put the array in it
+  //read infile into string to be put into shared memory
+  char *data = 0;
+  long length;
+  if (infile) {
+  fseek (infile, 0, SEEK_END);
+  length = ftell(infile);
+  fseek (infile, 0, SEEK_SET);
+  data = malloc(length+1);
+  if (data) {
+    fread (data, 1, length, infile);
+  }
+  fclose (infile);
+  data[length] = '\0';
+  }
+  int i;
+  for(i=0; data[i]!='\0'; i++) {
+    if(data[i]=='\n' || data[i]=='\r' ) {
+      data[i] = '$';
+    } else continue;
+  }
+  printf("%s\n", data);
+
+  //now shared memory for reals
+
+
+
 
   return 0;
 }
