@@ -31,28 +31,42 @@ int main(int argc, char **argv) {
 	printf("Gonna try printing...\n");
 	printf("%s", shm);
 
-	*shm = '*';
+
 	printf("Exiting, bitches\n");
 	return 0;
 
+	const char s[3] = "$$";
+	char *token;
+
+	token = strtok(shm, s);
+	while (token != NULL) {
+		char str[64];
+		strcpy(str, argv[argc-1]);
+		//printf("orig %s\n", argv[argc-1]);
+
+		//copy string over to leave original ok, so we can strip punc/ws
+		char str[64];
+		strcpy(str, argv[argc-1]);
+		removeSpaces(str);
+		//printf("sans space %s\n", str);
+		removeNonAlphaNum(str);
+		//printf("sans punc %s\n", str);
+
+		int l = 0;
+		int h = strlen(str)-1;
+		while (h > l) {
+			if (str[l++] != str[h--])  {
+				printf("%s no good\n", str);
+				return 0;
+			}
+		}
+		printf("%s FUCK YEAH PALINDROME\n", str);
+
+	}
 	// if (argc < 2) {
 	// 	perror("Palindromes: Not enough arguments. Aborting.\n");
 	// 	exit(-1);
 	// }
-
-	//printf("orig %s\n", argv[argc-1]);
-
-	//copy string over to leave original ok, so we can strip punc/ws
-	char str[64];
-	strcpy(str, argv[argc-1]);
-
-	removeSpaces(str);
-	//printf("sans space %s\n", str);
-
-	//strip non alphanumerc chars
-	removeNonAlphaNum(str);
-	//printf("sans punc %s\n", str);
-
 
 	int l = 0;
 	int h = strlen(str)-1;
@@ -63,6 +77,9 @@ int main(int argc, char **argv) {
 		}
 	}
 	printf("%s FUCK YEAH PALINDROME\n", str);
+
+	*shm = '*';
+
 	return 0;
 }
 

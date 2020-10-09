@@ -1,0 +1,24 @@
+Alberto Maiocco
+Project 2
+CS4760
+10/8/2020
+
+So I ran out of time figuring things out, and the project doesn't work as it should.
+
+That being said, what it does do is this:
+
+-takes command line arguments and data file
+-creates and attaches shared memory
+-copies file data to shared memory
+-client program is exec'd and reads shared memory.
+
+Palindromes can check for palindromes, however this functionality is not being used
+because of my issues with shared memory.
+
+make with make
+
+invocation is ./master -n <int> -t <int> -s <int> filename
+-h gives usage.
+
+I ran out of time, and started too late. I'll do better next time.
+Qapla!
