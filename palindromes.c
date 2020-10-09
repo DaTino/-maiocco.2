@@ -2,13 +2,20 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define SHMSZ 128
+
 void removeSpaces(char *s);
 void removeNonAlphaNum(char *str);
 
 int main(int argc, char **argv) {
-
+	
 	//this guy has to open and close a file, I believe...
 	//master controls the amount of processes doing the checking.
+	int shmid;
+	key_t key;
+	char *shm, *s;
+
+	
 
 	if (argc < 2) {
 		perror("Palindromes: Not enough arguments. Aborting.\n");

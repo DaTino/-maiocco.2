@@ -139,9 +139,31 @@ int main(int argc, char *argv[]) {
   printf("%s\n", data);
 
   //now shared memory for reals
+	char c;
+	int shmid;
+	key_t key;
+	char *shm, *s;
+	//key name 612- the best number.
+	key = 612;
+	//create shared memory segment	
+	if ((shmid = shmget(key, SHMSZ, IPC_CREAT | 0666)) < 0) {
+		perror("master: error creating segment.");
+		exit(1);
+	}
+	//attach segment to dataspace
+	if ((shm = shmat(shmid, NULL, 0)) == (char *) -1 {
+		perror("master: error attaching shared memory.");
+		exit(1);
+	}
 
+	s = shm;
+	for (c = data[i]; c != '\0'; i++) {
+		*s++ = c;
+	}
+	*s = NULL;
 
+	while (*shm != '*') sleep(1);
 
-
+	
   return 0;
 }
