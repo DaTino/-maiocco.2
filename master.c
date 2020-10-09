@@ -166,7 +166,10 @@ int main(int argc, char *argv[]) {
 	}
 	*s = NULL;
   printf("master: Data written to shared memory. Sleeping.\n");
-	while (*shm != '*') sleep(1);
+
+  execvp("./palindromes");
+
+  while (*shm != '*') sleep(1);
 
   signal(SIGALRM, interruptHandler);
   signal(SIGINT, interruptHandler);
