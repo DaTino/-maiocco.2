@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
 
 #define SHMSZ 128
 
@@ -26,14 +28,12 @@ int main(int argc, char **argv) {
 		perror("palindromes: error attaching shared memory.");
 		exit(1);
 	}
-
-	for (s = shm; *s != NULL; s++) {
-		putchar(*s);
-	}
-	putchar('\n');
+	printf("Gonna try printing...\n");
+	printf("%s", shm);
 
 	*shm = '*';
-	exit(0);
+	printf("Exiting, bitches\n");
+	return 0;
 
 	// if (argc < 2) {
 	// 	perror("Palindromes: Not enough arguments. Aborting.\n");

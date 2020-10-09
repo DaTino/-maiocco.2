@@ -160,20 +160,24 @@ int main(int argc, char *argv[]) {
 
   //writing to shared memory...
 	s = shm;
-  i = 0;
+  	i = 0;
 	for (i = 0; data[i] != '\0'; i++) {
 		*s++ = data[i];
+		printf("%c", *s);
 	}
 	*s = NULL;
   printf("master: Data written to shared memory. Sleeping.\n");
 
-  execvp("./palindromes");
+	char *args[]={"./palindromes",NULL};
+  execvp(args[0],args);
 
   while (*shm != '*') sleep(1);
 
   signal(SIGALRM, interruptHandler);
   signal(SIGINT, interruptHandler);
   alarm(2);
+
+	printf("Seeya\n");
 
   return 0;
 }
