@@ -160,6 +160,7 @@ int main(int argc, char *argv[]) {
 
   //writing to shared memory...
 	s = shm;
+  i = 0;
 	for (c = data[i]; c != '\0'; i++) {
 		*s++ = c;
 	}
@@ -167,6 +168,9 @@ int main(int argc, char *argv[]) {
   printf("master: Data written to shared memory. Sleeping.\n");
 	while (*shm != '*') sleep(1);
 
+  signal(SIGALRM, interruptHandler);
+  signal(SIGINT, interruptHandler);
+  alarm(2);
 
   return 0;
 }
